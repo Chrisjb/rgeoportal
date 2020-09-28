@@ -1,0 +1,26 @@
+Package: rgeoportal
+Type: Package
+Title: Fetch UK Boundary Files
+Version: 0.1.0
+Authors@R: 
+    c(person(given = "Chris",
+             family = "B",
+             role = c("cre", "aut"),
+             email = "c.jamesbailey@gmail.com")
+             )
+Description: Fetches various census and administrative boundaries (in sf format) from the geoportal API.
+    For more, see https://geoportal.statistics.gov.uk/.
+License: MIT
+URL: https://github.com/Chrisjb/rgeoportal
+BugReports: https://github.com/Chrisjb/rgeoportal
+Imports: 
+    httr,
+    dplyr,
+    jsonlite,
+    sf,
+    geojsonio,
+    stringr,
+    urltools
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
