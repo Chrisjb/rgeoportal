@@ -87,6 +87,8 @@ get_boundary <- function(boundary_type = c('administrative', 'census', 'electora
     # bbox query
     if('bbox' %in% class(bbox)){
       bbox <- paste0(round(bbox,6), collapse=',')
+    } else {
+      bbox <- stringr::str_trim(stringr::str_replace_all(bbox,' ',''))
     }
     # make query using bbox
     mapserver <- paste0(my_boundary,'/',boundary_name)
@@ -146,12 +148,13 @@ get_boundary <- function(boundary_type = c('administrative', 'census', 'electora
     res <- sf::read_sf(httr::content(shape,type='text',encoding='UTF-8'))
 
     return(res)
-  } else if(!is.na(custom_polygon)){
+  } else if(all(!is.na(custom_polygon))){
 
-    my_polygon <- custom_polygon %>%
-      filter(lad19nm == 'Southwark') %>%
+    my_polygon_cast <- custom_polygon %>%
       st_union()  %>%
-      st_cast('POLYGON') %>%
+      st_cast('POLYGON')
+    if(length(my_polygon_cast)>1)  warning(paste0('entered polygon has more than one part, only using first part.'))
+    my_polygon <- my_polygon_cast[1] %>%
       geojsonio::geojson_json()
 
     my_coords <- jsonlite::fromJSON(my_polygon)['coordinates']$coordinates
@@ -172,6 +175,18 @@ get_boundary <- function(boundary_type = c('administrative', 'census', 'electora
 
     res <- sf::read_sf(httr::content(req,type='text',encoding='UTF-8'))
     res
+  } else {
+
+    feature <- paste0(my_boundary,'/',boundary_name)
+    #make request
+    path <- paste0("https://ons-inspire.esriuk.com/arcgis/rest/services/",feature,"/MapServer/0/query?where=1%3d1&outFields=*&outSR=4326&f=geojson")
+    if(verbose) message(path)
+    shape <- httr::GET(path)
+    res <- sf::read_sf(httr::content(shape,type='text',encoding='UTF-8'))
+
+    return(res)
+
+
   }
 
 
