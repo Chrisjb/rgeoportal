@@ -6,6 +6,8 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       fig.path = "man/figures/README-")
+library(dplyr)
+library(sf)
 ```
 
 ## Installing rgeoportal
@@ -35,13 +37,14 @@ get_boundary(boundary_type = c("administrative", "census", "electoral",
 
 We can get the boundary names available within each boundary type by specifying `boundary_type` with no `boundary_name` option:
 
-```{r boundary_name_options}
+```{r boundary_census_options}
+library(rgeoportal)
 census_boundaries <- get_boundary(boundary_type = 'census')
 
 head(census_boundaries)
 ```
 
-```{r boundary_name_options}
+```{r boundary_admin_options}
 administrative <- get_boundary(boundary_type = 'administrative')
 
 head(administrative)
@@ -62,7 +65,7 @@ Note that most boundaries have a maximim record count of 200. Large requests wil
 
 We can select one of the boundary names returned from the above request and set it as the `boundary_name`:
 
-```{r boundary_name}
+```{r boundary_name, cache=TRUE}
 merged_auth <- get_boundary(boundary_type = 'census',
                                   boundary_name='Census_Merged_Local_Authority_Districts_December_2011_Boundaries')
 
@@ -104,7 +107,7 @@ my_bbox <- st_bbox(my_auths)
 
 
 
-```{r}
+```{r cache=TRUE}
 msoa_in_bbox <- get_boundary(boundary_type = 'census',
                              boundary_name='Middle_Super_Output_Areas_December_2011_Boundaries',
                              bbox = my_bbox)
@@ -123,7 +126,7 @@ ggplot() +
 
 We can also specify a `bbox` from a user specified string:
 
-```{r}
+```{r cache = TRUE}
 msoa_in_bbox_2 <- get_boundary(boundary_type = 'census',
                              boundary_name='Middle_Super_Output_Areas_December_2011_Boundaries',
                              bbox = '-2.65,51.41,-2.52,51.50')
@@ -145,7 +148,7 @@ Another way to filter the request is to get boundaries within a set radius of a 
 `point` should be a longitude latitude point in the form 'lng,lat'
 `radius` is specified in meters
 
-```{r}
+```{r cache = TRUE}
 ward_in_radius <- get_boundary(boundary_type = 'admin',
                              boundary_name='Wards_May_2019_Boundaries_UK_BFC',
                              point = '-2.58791,51.45451',
@@ -160,7 +163,7 @@ If we don't want to list the exact names of the wards, we can do partial matchin
 
 Specifying `names_like` will return polygons that (partially) match the name of the polygon
 
-```{r}
+```{r cache = TRUE}
 msoa_dartford <- get_boundary(boundary_type = 'census',
                              boundary_name='Middle_Super_Output_Areas_December_2011_Boundaries',
                              names_like = c('Dartford'))
@@ -173,7 +176,7 @@ head(msoa_dartford)
 ### names_equal
 If we know the exact name(s) of the polygon we want to return, we should specify `names_equal`:
 
-```{r}
+```{r cache=TRUE}
 dg <- get_boundary(boundary_type = 'admin',
                              boundary_name='Local_Authority_Districts_December_2019_Boundaries_UK_BFC',
                              names_equal = c('Dartford', 'Gravesham'))
@@ -192,7 +195,7 @@ custom_poly_simp <- rmapshaper::ms_simplify(custom_poly)
 ```
 
 
-```{r}
+```{r cache=TRUE}
 lsoa_in_poly <- get_boundary(boundary_type = 'census',
                              boundary_name='Lower_Super_Output_Areas_December_2011_Boundaries',
                              custom_polygon = custom_poly_simp)
