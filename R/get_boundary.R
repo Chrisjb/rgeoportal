@@ -150,6 +150,8 @@ get_boundary <- function(boundary_type = c('administrative', 'census', 'electora
     return(res)
   } else if(all(!is.na(custom_polygon))){
 
+    feature <- paste0(my_boundary,'/',boundary_name)
+
     my_polygon_cast <- custom_polygon %>%
       st_union()  %>%
       st_cast('POLYGON')
